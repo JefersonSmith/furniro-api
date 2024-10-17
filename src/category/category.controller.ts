@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/commo
 import { CategoryService } from './category.service';
 import { Category } from './category.entity';
 
-@Controller('categories')
+@Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
@@ -16,17 +16,17 @@ export class CategoryController {
     return this.categoryService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: number): Promise<Category> {
     return this.categoryService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch('/:id')
   update(@Param('id') id: number, @Body() updateCategoryData: Partial<Category>): Promise<Category> {
     return this.categoryService.update(id, updateCategoryData);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   delete(@Param('id') id: number): Promise<void> {
     return this.categoryService.delete(id);
   }
