@@ -22,13 +22,15 @@ export class ProductController {
 
   @Get()
   findAll(
-    @Query('sortBy') sortBy?: string, // Adiciona parâmetro de consulta para ordenação
-    @Query('sortDirection') sortDirection?: 'ASC' | 'DESC', // Adiciona direção de ordenação
-    @Query('isNew') isNew?: string, // Adiciona parâmetro de consulta para produtos novos
-    @Query('categoryName') categoryName?: string // Adiciona filtro por nome da categoria
+    @Query('sortBy') sortBy?: string,
+    @Query('sortDirection') sortDirection?: 'ASC' | 'DESC',
+    @Query('isNew') isNew?: string,
+    @Query('category') category?: string // Espera o ID da categoria
   ): Promise<Product[]> {
-    const isNewBoolean = isNew ? isNew.toLowerCase() === 'true' : undefined; // Converte para booleano
-    return this.productService.findAll(sortBy, sortDirection, isNewBoolean, categoryName); // Passa o novo parâmetro
+    const isNewBoolean = isNew ? isNew.toLowerCase() === 'true' : undefined;
+    const categoryNumber = category ? parseInt(category) : undefined; // Converte para número
+  
+    return this.productService.findAll(sortBy, sortDirection, isNewBoolean, categoryNumber);
   }
 
   @Get('/:id')

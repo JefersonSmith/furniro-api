@@ -14,27 +14,27 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-  async findAll(sortBy?: string, sortDirection?: 'ASC' | 'DESC', isNew?: boolean, categoryName?: string): Promise<Product[]> {
+  async findAll(sortBy?: string, sortDirection?: 'ASC' | 'DESC', isNew?: boolean, categoryId?: number): Promise<Product[]> {
     const queryBuilder = this.productRepository.createQueryBuilder('product');
-
-    // Adiciona filtro para produtos novos
+  
+    // Filtra produtos novos (isNew)
     if (isNew !== undefined) {
       queryBuilder.andWhere('product.is_new = :isNew', { isNew });
     }
-
-    // Adiciona filtro para a categoria
-    if (categoryName) {
+  
+    // Filtra por ID da categoria
+    if (categoryId) {
       queryBuilder
-        .innerJoinAndSelect('product.category', 'category') // Certifique-se de que a relação está correta
-        .andWhere('category.name = :categoryName', { categoryName });
+        .innerJoinAndSelect('product.category', 'category')
+        .andWhere('category.id = :categoryId', { categoryId }); // Agora filtrando por ID
     }
-
-    // Adiciona ordenação
+  
+    // Ordenação
     if (sortBy) {
       queryBuilder.orderBy(`product.${sortBy}`, sortDirection || 'ASC');
     }
-
-    return await queryBuilder.getMany(); // Retorna a lista de produtos
+  
+    return await queryBuilder.getMany();
   }
 
   findOne(id: number): Promise<Product> {

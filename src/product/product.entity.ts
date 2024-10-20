@@ -36,8 +36,9 @@ export class Product {
   @Column({ length: 250, nullable: true })
   image_link: string;
 
-  @Column({ length: 1000, nullable: true })
-  other_images_link: string;
+  @Column('text', { array: true, nullable: true }) 
+  other_images_link: string[];
+  
 
   @CreateDateColumn()
   created_date: Date;
