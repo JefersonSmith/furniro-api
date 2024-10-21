@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, ParseIntPipe } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Category } from './category.entity';
 
@@ -17,17 +17,17 @@ export class CategoryController {
   }
 
   @Get('/:id')
-  findOne(@Param('id') id: number): Promise<Category> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Category> {
     return this.categoryService.findOne(id);
   }
 
   @Patch('/:id')
-  update(@Param('id') id: number, @Body() updateCategoryData: Partial<Category>): Promise<Category> {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateCategoryData: Partial<Category>): Promise<Category> {
     return this.categoryService.update(id, updateCategoryData);
   }
 
   @Delete('/:id')
-  delete(@Param('id') id: number): Promise<void> {
+  delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.categoryService.delete(id);
   }
 }
