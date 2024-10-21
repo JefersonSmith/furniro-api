@@ -14,27 +14,43 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-  async findAll(sortBy?: string, sortDirection?: 'ASC' | 'DESC', isNew?: boolean, categoryId?: number): Promise<Product[]> {
+  async findAll(
+    page: number,
+    limit: number,
+    sortBy?: string,
+    sortDirection?: 'ASC' | 'DESC',
+    isNew?: boolean,
+    categoryId?: number
+  ): Promise<{ results: number; startIndex: number; endIndex: number; products: Product[] }> {
+    const offset = (page - 1) * limit; // Cálculo para pular registros
+
     const queryBuilder = this.productRepository.createQueryBuilder('product');
-  
+
     // Filtra produtos novos (isNew)
     if (isNew !== undefined) {
       queryBuilder.andWhere('product.is_new = :isNew', { isNew });
     }
-  
+
     // Filtra por ID da categoria
     if (categoryId) {
       queryBuilder
         .innerJoinAndSelect('product.category', 'category')
-        .andWhere('category.id = :categoryId', { categoryId }); // Agora filtrando por ID
+        .andWhere('category.id = :categoryId', { categoryId });
     }
-  
+
     // Ordenação
     if (sortBy) {
       queryBuilder.orderBy(`product.${sortBy}`, sortDirection || 'ASC');
     }
-  
-    return await queryBuilder.getMany();
+
+    queryBuilder.skip(offset).take(limit); // Aplica a paginação
+
+    const [products, total] = await queryBuilder.getManyAndCount(); // Retorna produtos e total de registros
+
+    const endIndex = Math.min(page * limit, total);
+    const startIndex = offset + 1;
+
+    return { results: total, startIndex, endIndex, products };
   }
 
   findOne(id: number): Promise<Product> {

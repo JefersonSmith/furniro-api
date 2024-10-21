@@ -22,15 +22,19 @@ export class ProductController {
 
   @Get()
   findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
     @Query('sortBy') sortBy?: string,
     @Query('sortDirection') sortDirection?: 'ASC' | 'DESC',
     @Query('isNew') isNew?: string,
     @Query('category') category?: string // Espera o ID da categoria
-  ): Promise<Product[]> {
+  ): Promise<{ results: number; startIndex: number; endIndex: number; products: Product[] }> {
+    const pageNumber = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 10; // Definindo um limite padrão de 10
     const isNewBoolean = isNew ? isNew.toLowerCase() === 'true' : undefined;
     const categoryNumber = category ? parseInt(category) : undefined; // Converte para número
-  
-    return this.productService.findAll(sortBy, sortDirection, isNewBoolean, categoryNumber);
+
+    return this.productService.findAll(pageNumber, limitNumber, sortBy, sortDirection, isNewBoolean, categoryNumber);
   }
 
   @Get('/:id')
